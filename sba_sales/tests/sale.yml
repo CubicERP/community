@@ -1,0 +1,124 @@
+-
+ Asigno al operador de oportunidades y ventas al usuario de ventas. 
+-
+  !context
+    uid: 'res_users_salesman_user'
+-
+  Tomo el presupuesto generado desde la oportunidad.
+  Esta forma extraña de hacerlo es porque las entidadas creadas 
+  fueras del YAML no le son asignadas el xml_id. Aquí le estoy
+  forzando el xml_id sba_sales.sale_order_from_lead.
+-
+  !python {model: crm.lead}: |
+    crm = self.browse(cr, uid, ref("test_crm_lead_new"))
+    ir_model_data = self.pool.get('ir.model.data')
+    ir_model_data.create(cr, 1, {
+                'model': crm.ref._name,
+                'res_id': crm.ref.id,
+                'module': 'sba_sales',
+                'name': 'sale_order_from_lead',
+            })
+    assert crm.ref.get_xml_id(cr, uid, crm.ref.id)[crm.ref.id] == 'sba_sales.sale_order_from_lead', 'Wrong xml_id assign.'
+
+-
+  Verifico que se haya asignado correctamente el xml_id
+-
+  !assert {model: sale.order, id: sba_sales.sale_order_from_lead, string: No se asigno el xmi_id a la oportunidad correcta}:
+    - name[:1] == "S"
+    - partner_id.name == "CLIENTE 0"
+    - discount_ok == True
+    - add_disc == 0
+-
+  Agrego lineas de productos al presupuesto.
+-
+  !record {model: sale.order, id: sale_order_from_lead}:
+    partner_id: contacto_0 # Necesita de este para llenar el formulario
+    add_disc: 15
+    order_line:
+       - product_id: product_0
+         product_uom_qty: 10
+         discount: 15
+       - product_id: product_1
+         product_uom_qty: 100
+         discount: 4
+-
+  Verifico al asignarle un descuento, el descuento no está validado.
+-
+  !assert {model: sale.order, id: sba_sales.sale_order_from_lead, string: Error! El descuento sigue validado}:
+    - name[:1] == "S"
+    - partner_id.name == "CONTACTO 0"
+    - discount_ok == False
+    - state == 'draft'
+    - add_disc == 15
+-
+  Intento validarlo
+-
+  !python {model: sale.order}: |
+    ok = False
+    try:
+        self.action_button_confirm(cr, uid, [ref('sale_order_from_lead')])
+    except:
+        ok = True
+    if not ok:
+        assert True, "Aprobó un presupuesto que no tiene permitido"
+-
+  Como no permitio modificar, pero no ocurrio el rollback porque capture la excepcion,
+  solo me queda reescribir el estado.
+-
+  !record {model: sale.order, id: sale_order_from_lead}:
+    state: draft
+-
+  No debería haber permitido validar el presupuesto.
+-
+  !assert {model: sale.order, id: sba_sales.sale_order_from_lead, string: Se permitio validar!}:
+    - discount_ok == False
+    - state == 'draft'
+-
+  Se aprueba el presupuesto
+-
+  !python {model: sale.order}: |
+    try:
+        self.approve_discount(cr, uid, [ref('sale_order_from_lead')])
+    except ValidateError:
+        pass
+    except:
+        raise ValidateError, "Aprobó un presupuesto que no tiene permitido"
+-
+  No debería haber permitido aprobar el presupuesto.
+-
+  !assert {model: sale.order, id: sba_sales.sale_order_from_lead, string: No se permitio el descuento}:
+    - discount_ok == False
+    - state == 'draft'
+-
+  Cambio de usuario al administrador del local
+-
+  !context
+    uid: 'salesman_manager_local'
+-
+  Se aprueba el presupuesto
+-
+  !python {model: sale.order}: |
+    self.approve_discount(cr, uid, [ref('sale_order_from_lead')])
+-
+  Aprobó el presupuesto.
+-
+  !assert {model: sale.order, id: sba_sales.sale_order_from_lead, string: No se permitio el descuento}:
+    - discount_ok == False
+    - state == 'draft'
+-
+  Intento validarlo
+-
+  !python {model: sale.order}: |
+    self.action_button_confirm(cr, uid, [ref('sale_order_from_lead')])
+-
+  Debería haber permitido validar el presupuesto.
+-
+  !assert {model: sale.order, id: sba_sales.sale_order_from_lead, string: No se permitio el descuento}:
+    - discount_ok == False
+    - state == 'draft'
+-
+  ERROR
+-
+  !assert {model: sale.order, id: sba_sales.sale_order_from_lead, string: No se permitio el descuento}:
+    - state == 'nodraft'
+

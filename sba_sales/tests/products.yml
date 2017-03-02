@@ -1,0 +1,11 @@
+-
+ Producto 0
+-
+ !record { model: product.product, id: product_0 }:
+    name: Product 0
+-
+ Producto 1
+-
+ !record { model: product.product, id: product_1 }:
+    name: Product 1
+

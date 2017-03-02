@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+<template id="report_saleorder_sba">
+    <t t-call="report.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="report.external_layout">
+
+                <div class="page">
+                    <div class="oe_structure"/>
+                    <div class="row">
+                        <div class="col-xs-6">
+			    <h3 t-if="o.partner_id"><span t-field="o.partner_id.name" /></h3>
+                            <p t-if="o.partner_shipping_id == o.partner_invoice_id">Dirección facturación y envio:</p>
+                            <p t-if="o.partner_shipping_id != o.partner_invoice_id">Dirección envio: </p>
+                            <div t-field="o.partner_invoice_id" 
+                                t-field-options='{"widget": "contact", "fields": ["address", "name", "phone", "fax"], "no_marker": true}'/>
+                            <p t-if="o.partner_id.document_number">CUIT: <span t-field="o.partner_id.document_number"/></p>
+                        </div>
+                    </div>
+
+                    <h2>
+                        <span t-if="o.state not in ['draft','sent']">Orden N° </span>
+                        <span t-if="o.state in ['draft','sent']">Presupuesto N° </span>
+                        <span t-field="o.name"/>
+                    </h2>
+
+                    <div class="row mt32 mb32">
+                        <div t-if="o.client_order_ref" class="col-xs-3">
+                            <strong>Referencia:</strong>
+                            <p t-field="o.client_order_ref"/>
+                        </div>
+                        <div t-if="o.date_order" class="col-xs-3">
+                            <strong t-if="o.state not in ['draft','sent']">Fecha del Pedido:</strong>
+                            <strong t-if="o.state in ['draft','sent']">Fecha del Presupuesto:</strong>
+                            <p t-field="o.date_order"/>
+                        </div>
+                        <div t-if="o.user_id.name" class="col-xs-3">
+                            <strong>Promotor:</strong>
+                            <p t-field="o.user_id.name"/>
+                        </div>
+                        <div t-if="o.payment_term" class="col-xs-3">
+                            <strong>Términos de Pago:</strong>
+                            <p t-field="o.payment_term"/>
+                        </div>
+                    </div>
+
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Descripción</th>
+                                <th class="text-right">Cantidad</th>
+                                <th class="text-right">Precio Pub.</th>
+                                <th class="text-right">Precio c/dto.</th>
+                                <th class="text-right">Impuestos</th>
+                                <th groups="sale.group_discount_per_so_line" class="text-right">Desc.(%)</th>
+                                <th class="text-right">Subtotal</th>
+                            </tr>
+                       </thead>
+                       <tbody>
+                            <tr t-foreach="o.order_line" t-as="l">
+                                <td>
+                                   <span  t-field="l.name"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="l.product_uom_qty"/>
+                                    <span groups="product.group_uom" t-field="l.product_uom"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="l.price_unit"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="l.list_price_perunit" />
+                                </td>
+                                <td>
+                                    <span t-esc="', '.join(map(lambda x: x.name, l.tax_id))"/>
+                                </td>
+                                <td groups="sale.group_discount_per_so_line" class="text-right">
+                                    <span t-field="l.discount"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="l.price_subtotal"
+                                        t-field-options='{"widget": "monetary", "display_currency": "o.pricelist_id.currency_id"}'/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="row">
+                        <div class="col-xs-4 pull-right">
+                            <table class="table table-condensed">
+                                <tr class="border-black">
+                                    <td><strong>Total Sin Impuestos</strong></td>
+                                    <td class="text-right">
+                                        <span t-field="o.amount_untaxed"
+                                            t-field-options='{"widget": "monetary", "display_currency": "o.pricelist_id.currency_id"}'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Descuento</strong></td>
+                                    <td class="text-right">
+                                        <span t-field="o.add_disc_amt"
+                                            t-field-options='{"widget": "monetary", "display_currency": "o.pricelist_id.currency_id"}'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Impuestos</td>
+                                    <td class="text-right">
+                                        <span t-field="o.amount_tax"
+                                            t-field-options='{"widget": "monetary", "display_currency": "o.pricelist_id.currency_id"}'/>
+                                    </td>
+                                </tr>
+                                <tr class="border-black">
+                                    <td><strong>Total</strong></td>
+                                    <td class="text-right">
+                                        <span t-field="o.amount_total"
+                                            t-field-options='{"widget": "monetary", "display_currency": "o.pricelist_id.currency_id"}'/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <p t-field="o.note" />
+		    <p t-if="o.create_uid">
+			<strong>Cotizado por:</strong>
+			<span t-field="o.create_uid.name" />
+		    </p>
+		    <p>
+			<span>NOTA: La entrega y envio de los materiales solicitados está sujeta a disponibilidad de los mismos y al saldo de
+Cuenta Corriente. Los precios y descuentos están sujetos a verificación. El flete es a cargo del COMPRADOR, y será
+pagado en destino.</span>
+		    </p>
+		    <span>
+			<p>Para su comodidad ud. podrá optar entre los siguientes medios de pago:</p>
+			<li>Contado o efectivo</li>
+			<li>Deposito o transferencia</li>
+			<li>Tarjeta de credito y debito habilitadas</li>
+			<li>Pago fácil (en lugares habilitados)</li>
+			<li>Otros medios</li>
+		    </span>
+                    <table class="table table-condensed">
+                        <thead>
+                        	<tr>
+					<th>Sucursal</th>
+                               		 <th>Direccion</th>
+                               		 <th>Telefono</th>
+                               		 <th>e-mail</th>
+					 <th>Website</th>
+				</tr>
+			</thead>
+                       <tbody>
+				<td>
+                                   <span  t-field="o.section_id.region_id.printed_name"/>
+				</td>
+                                <td>
+                                   <span  t-field="o.section_id.region_id.printed_address"/>
+                                </td>
+                                <td>
+                                   <span  t-field="o.section_id.region_id.printed_phone"/>
+                                </td>
+                                <td>
+                                   <span  t-field="o.section_id.region_id.printed_email"/>
+                                </td>
+				<td>www.sba.org.ar</td>
+                       </tbody>
+		    </table>
+                    <div class="oe_structure"/>
+                </div>
+            </t>
+        </t>
+    </t>
+</template>
+</data>
+</openerp>

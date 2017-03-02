@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record model="ir.ui.view" id="product_pricelist_price_tree_view">
+            <field name="name">product.pricelist.price.tree.inherit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+                <data>
+                        <field name="lst_price" position="after">
+                              <!-- field name="pricelist_price" / -->
+                              <field name="pricelist_price_distrib" />
+                              <field name="pricelist_price_librerias" />
+                              <field name="pricelist_price_iglesias" />
+                        </field>
+                </data>
+            </field>
+        </record>
+
+
+    <record id="view_product_filter_inh" model="ir.ui.view">
+        <field name="name">Products - Search</field>
+        <field name="model">product.product</field>
+	<field name="inherit_id" ref="product.product_search_form_view" />
+        <field name="arch" type="xml">
+                <xpath expr="//filter[@string='Type']" position="after">
+			<separator />
+                        <filter string='Familia' icon="terp-mrp" domain="[]" context="{'group_by' : 'familia'}"/>
+                        <filter string='Categoria' icon="terp-mrp" domain="[]" context="{'group_by' : 'categoria'}"/>
+                        <filter string='Version' icon="terp-mrp" domain="[]" context="{'group_by' : 'version'}"/>
+                        <filter string='Sub-Categoria' icon="terp-mrp" domain="[]" context="{'group_by' : 'subcategoria'}"/>
+                </xpath>
+                <xpath expr="//filter[@string='Services']" position="before">
+        	        <filter string="Biblias" icon="terp-camera_test"  domain="[('familia','=','BIBLIAS')]"
+				 help = "Biblias" />
+        	        <filter string="Libros" icon="terp-camera_test"  domain="[('familia','=','LIBROS')]"
+				 help = "Libros" />
+        	        <filter string="Selecciones" icon="terp-camera_test"  domain="[('familia','=','SELECCIONES')]"
+				 help = "Selecciones" />
+			<separator />
+                </xpath>
+        </field>
+    </record>
+
+
+	<record model="ir.ui.view" id="product_sba_form_view">
+	    <field name="name">product.sba.form.inherit</field>
+	    <field name="model">product.product</field>
+	    <field name="inherit_id" ref="product.product_normal_form_view"/>
+	    <field name="arch" type="xml">
+	        <data>
+			<notebook>
+				<page string="SBA">
+				   <separator string="Clasificacion" />
+				   <group colspan="4">
+					<field name="sba_sku_no" /> 
+					<field name="sba_code" />
+					<field name="promotional_price" /> 
+				   </group>
+				   <separator string="Clasificacion" />
+				   <group colspan="2">
+					<field name="familia" /> 
+					<field name="categoria" /> 
+					<field name="version" /> 
+					<field name="subcategoria" /> 
+					<field name="product_origin" /> 
+					<field name="product_language" /> 
+				   </group>
+				   <separator string="Eventos" />
+	                               <field name="events_ids" widget="many2many_list" string="Eventos" colspan="4">
+                                        <tree editable="bottom">
+                                                    <field name="name" />
+                                                    <field name="fecha_desde"/>
+                                                    <field name="fecha_hasta" />
+                                        </tree>
+                                </field>
+
+				</page>
+			</notebook>
+		</data>
+	    </field>
+	</record>
+
+        <record id="eventos_tree_view" model="ir.ui.view">
+            <field name="name">product.events.treeview</field>
+            <field name="model">product.event</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Eventos" editable="bottom">
+                        <field name="name"/>
+                        <field name="fecha_desde"/>
+                        <field name="fecha_hasta"/>
+                </tree>
+            </field>
+        </record>
+
+	<!-- EVENTOS -->
+
+        <record id="eventos_view" model="ir.ui.view">
+            <field name="name">product.events.view</field>
+            <field name="model">product.event</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Eventos">
+                    <group col="6" colspan="4">
+                        <field name="name"/>
+                        <field name="fecha_desde"/>
+                        <field name="fecha_hasta"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_eventos_form" model="ir.actions.act_window">
+            <field name="name">Eventos</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.event</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="eventos_tree_view"/>
+        </record>
+
+        <menuitem id="menu_sba_events_id" name="Eventos" parent="base.menu_product" sequence="5" action="action_eventos_form" />
+
+	<!-- FAMILIAS -->
+        <record id="familias_tree_view" model="ir.ui.view">
+            <field name="name">product.familia.treeview</field>
+            <field name="model">product.familia</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Familias" editable="bottom">
+                        <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="familias_view" model="ir.ui.view">
+            <field name="name">product.familia.view</field>
+            <field name="model">product.familia</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Familias">
+                    <group col="6" colspan="4">
+                        <field name="name"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_familias_form" model="ir.actions.act_window">
+            <field name="name">Familias</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.familia</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="familias_tree_view"/>
+        </record>
+
+        <menuitem id="menu_sba_familia_id" name="Familias" parent="base.menu_product" sequence="5" action="action_familias_form" />
+	
+	<!-- CATEGORIAS -->
+        <record id="categorias_tree_view" model="ir.ui.view">
+            <field name="name">product.categoria.treeview</field>
+            <field name="model">product.categoria</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Categorias" editable="bottom">
+                        <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="categorias_view" model="ir.ui.view">
+            <field name="name">product.categoria.view</field>
+            <field name="model">product.categoria</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Categorias">
+                    <group col="6" colspan="4">
+                        <field name="name"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_categorias_form" model="ir.actions.act_window">
+            <field name="name">Categorias</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.categoria</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="categorias_tree_view"/>
+        </record>
+
+        <menuitem id="menu_sba_categoria_id" name="Categorias" parent="base.menu_product" sequence="5" action="action_categorias_form" />
+
+	<!-- VERSION -->
+        <record id="version_tree_view" model="ir.ui.view">
+            <field name="name">product.version.treeview</field>
+            <field name="model">product.version</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Version" editable="bottom">
+                        <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="version_view" model="ir.ui.view">
+            <field name="name">product.version.view</field>
+            <field name="model">product.version</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Version">
+                    <group col="6" colspan="4">
+                        <field name="name"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_version_form" model="ir.actions.act_window">
+            <field name="name">Version</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.version</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="version_tree_view"/>
+        </record>
+
+        <menuitem id="menu_sba_version_id" name="Version" parent="base.menu_product" sequence="5" action="action_version_form" />
+
+	<!-- SUBCATEGORIA -->
+        <record id="subcategoria_tree_view" model="ir.ui.view">
+            <field name="name">product.subcategoria.treeview</field>
+            <field name="model">product.subcategoria</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Subcategoria" editable="bottom">
+                        <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="subcategoria_view" model="ir.ui.view">
+            <field name="name">product.subcategoria.view</field>
+            <field name="model">product.subcategoria</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Subcategoria">
+                    <group col="6" colspan="4">
+                        <field name="name"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_subcategoria_form" model="ir.actions.act_window">
+            <field name="name">Subcategoria</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.subcategoria</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="subcategoria_tree_view"/>
+        </record>
+
+        <menuitem id="menu_sba_subcategoria_id" name="Subcategoria" parent="base.menu_product" sequence="5" action="action_subcategoria_form" />
+
+	<!-- IDIOMA -->
+        <record id="language_tree_view" model="ir.ui.view">
+            <field name="name">product.language.treeview</field>
+            <field name="model">product.language</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Language" editable="bottom">
+                        <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="language_view" model="ir.ui.view">
+            <field name="name">product.language.view</field>
+            <field name="model">product.language</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Language">
+                    <group col="6" colspan="4">
+                        <field name="name"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_language_form" model="ir.actions.act_window">
+            <field name="name">Idioma</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.language</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="language_tree_view"/>
+        </record>
+
+        <menuitem id="menu_sba_language_id" name="Idioma" parent="base.menu_product" sequence="5" action="action_language_form" />
+
+
+    </data>
+</openerp>

@@ -1,0 +1,23 @@
+-
+  Equipo de ventas nacional
+-
+ !record { model: crm.case.section, id: saleteam_national }:
+   name: National Saleteam
+   user_id: salesman_manager_national
+   discount: 20
+   credit_tolerance: 1000
+
+-
+ Equipo de ventas local
+-
+ !record { model: crm.case.section, id: saleteam_local }:
+   name: Local Saleteam
+   parent_id: saleteam_national
+   user_id: salesman_manager_local
+   member_ids:
+     - salesman_manager_local
+     - res_users_salesman_user
+   discount: 10
+   credit_tolerance: 100
+
+

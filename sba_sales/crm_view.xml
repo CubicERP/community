@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+    <record id="view_lead_filter_inh" model="ir.ui.view">
+        <field name="name">Opportunitiess - Search</field>
+        <field name="model">crm.lead</field>
+	<field name="inherit_id" ref="crm.view_crm_case_opportunities_filter" />
+        <field name="arch" type="xml">
+                <xpath expr="//filter[@string='Won']" position="before">
+        	     <filter string="Por Vencer" icon="terp-camera_test"  
+			domain="[('date_deadline','&lt;',((datetime.date.today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d'))),('date_deadline','&gt;',((datetime.date.today().strftime('%Y-%m-%d'))))]"  help = "Oportunidades por Vencer" />
+                </xpath>
+        </field>
+    </record>
+
+	<record model="ir.ui.view" id="sba_crm_opportunity_form_view">
+	    <field name="name">crm_lead.sba.form.inherit</field>
+	    <field name="model">crm.lead</field>
+	    <field name="inherit_id" ref="crm.crm_case_form_view_oppor" />
+	    <field name="arch" type="xml">
+	        <data>
+			<button name="case_mark_won" position="before">
+                              <button name="sba_sales.action_crmlead_user_assign_gus" string="Delegar" type="action" class="oe_highlight"/>
+			</button>
+
+			<field name="user_id" position="attributes">
+			            <attribute name="readonly">1</attribute>
+			</field>
+			<field name="section_id" position="attributes">
+			            <attribute name="readonly">1</attribute>
+			</field>
+		</data>
+	    </field>
+	</record>
+
+    </data>
+</openerp>

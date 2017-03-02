@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="True">
+        <record model='ir.cron' id='update_warn_msgs'>
+            <field name='name'>Update warning messages</field>
+            <field name='active'>True</field>
+            <field name='priority'>5</field>
+            <field name='interval_number'>1</field>
+            <field name='number_call'>-1</field>
+            <field name='interval_type'>hours</field>
+            <field name='model'>res.partner</field>
+            <field name='function'>_update_warning_msgs</field>
+            <field name='args'>()</field>
+        </record>
+    </data>
+</openerp>

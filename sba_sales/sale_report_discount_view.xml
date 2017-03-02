@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+	
+    <record id="view_order_product_discount_graph" model="ir.ui.view">
+         <field name="name">sale.report.graph</field>
+         <field name="model">sale.report.discount</field>
+         <field name="arch" type="xml">
+             <graph string="Sales Analysis" type="pivot" stacked="True">
+                 <field name="user_id" type="row"/>
+                 <field name="date" interval="month" type="col"/>
+                 <field name="price_total" type="measure"/>
+                 <field name="discount" type="measure"/>
+             </graph>
+         </field>
+    </record>
+
+    <record id="view_order_product_discount_search" model="ir.ui.view">
+        <field name="name">sale.report.search</field>
+        <field name="model">sale.report.discount</field>
+        <field name="arch" type="xml">
+            <search string="Sales Analysis">
+                <field name="date"/>
+                <field name="date_confirm"/>
+                <filter string="This Year" name="year" domain="[('date','&lt;=', time.strftime('%%Y-12-31')),('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+                <separator/>
+                <filter name="Quotations" domain="[('state','in',('draft','sent'))]"/>
+                <filter name="Sales" string="Sales" domain="[('state','not in',('draft','sent','cancel'))]"/>
+                <separator/>
+                <filter string="My Sales" help="My Sales" domain="[('user_id','=',uid)]"/>
+                <field name="partner_id"/>
+                <field name="product_id"/>
+                <field name="user_id"/>
+                <group expand="0" string="Extended Filters">
+                    <field name="categ_id"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </group>
+                <group expand="1" string="Group By">
+                    <filter string="Salesperson" icon="terp-personal" name="User" context="{'group_by':'user_id'}"/>
+                    <filter string="Sales Team" context="{'group_by':'section_id'}" groups="base.group_multi_salesteams"/>
+                    <filter string="Partner" icon="terp-partner"  name="Customer" context="{'group_by':'partner_id'}"/>
+                    <filter string="Product" icon="terp-accessories-archiver" context="{'group_by':'product_id','set_visible':True}"/>
+                    <filter string="Reference Unit of Measure" icon="terp-mrp" context="{'group_by':'product_uom'}"/>
+                    <filter string="Category of Product" icon="terp-stock_symbol-selection" name="Category" context="{'group_by':'categ_id'}"/>
+                    <filter string="Analytic Account" icon="terp-folder-green" context="{'group_by':'analytic_account_id'}" groups="analytic.group_analytic_accounting"/>
+                    <filter string="Status" icon="terp-stock_effects-object-colorize" context="{'group_by':'state'}"/>
+                    <filter string="Company" icon="terp-go-home" groups="base.group_multi_company" context="{'group_by':'company_id'}"/>
+                    <filter string="Order Date" icon="terp-go-today" context="{'group_by':'date'}" help="Ordered date of the sales order"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_order_report_discount" model="ir.actions.act_window">
+        <field name="name">Descuentos por productos</field>
+        <field name="res_model">sale.report.discount</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">graph</field>
+        <field name="search_view_id" ref="view_order_product_discount_search"/>
+        <field name="view_id" ref="view_order_product_discount_graph"/>
+        <field name="context">{'search_default_Sales':1, 'search_default_year': 1, 'group_by_no_leaf':1,'group_by':[]}</field>
+        <field name="help">This report performs analysis on your quotations and sales orders. Analysis check your sales revenues and sort it by different group criteria (salesman, partner, product, etc.) Use this report to perform analysis on sales not having invoiced yet. If you want to analyse your turnover, you should use the Invoice Analysis report in the Accounting application.</field>
+    </record>
+
+    <menuitem action="action_order_report_discount" id="menu_report_product_discount" parent="base.next_id_64" sequence="15"/>
+
+
+
+    <record id="view_order_header_discount_graph" model="ir.ui.view">
+         <field name="name">sale.report.graph</field>
+         <field name="model">sale.report.header.discount</field>
+         <field name="arch" type="xml">
+             <graph string="Sales Analysis" type="pivot" stacked="True">
+                 <field name="user_id" type="row"/>
+                 <field name="date" interval="month" type="col"/>
+                 <field name="avg_discount" type="measure"/>
+                 <field name="sum_discount" type="measure"/>
+                 <field name="sum_amount_net" type="measure"/>
+                 <field name="sum_amount_total" type="measure"/>
+             </graph>
+         </field>
+    </record>
+
+    <record id="view_order_header_discount_search" model="ir.ui.view">
+        <field name="name">sale.report.search</field>
+        <field name="model">sale.report.header.discount</field>
+        <field name="arch" type="xml">
+            <search string="Sales Analysis">
+                <field name="date"/>
+                <field name="date_confirm"/>
+                <filter string="This Year" name="year" domain="[('date','&lt;=', time.strftime('%%Y-12-31')),('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+                <separator/>
+                <filter name="Quotations" domain="[('state','in',('draft','sent'))]"/>
+                <filter name="Sales" string="Sales" domain="[('state','not in',('draft','sent','cancel'))]"/>
+                <separator/>
+                <filter string="My Sales" help="My Sales" domain="[('user_id','=',uid)]"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <group expand="0" string="Extended Filters">
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </group>
+                <group expand="1" string="Group By">
+                    <filter string="Salesperson" icon="terp-personal" name="User" context="{'group_by':'user_id'}"/>
+                    <filter string="Sales Team" context="{'group_by':'section_id'}" groups="base.group_multi_salesteams"/>
+                    <filter string="Partner" icon="terp-partner"  name="Customer" context="{'group_by':'partner_id'}"/>
+                    <filter string="Analytic Account" icon="terp-folder-green" context="{'group_by':'analytic_account_id'}" groups="analytic.group_analytic_accounting"/>
+                    <filter string="Status" icon="terp-stock_effects-object-colorize" context="{'group_by':'state'}"/>
+                    <filter string="Company" icon="terp-go-home" groups="base.group_multi_company" context="{'group_by':'company_id'}"/>
+                    <filter string="Order Date" icon="terp-go-today" context="{'group_by':'date'}" help="Ordered date of the sales order"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_order_header_discount" model="ir.actions.act_window">
+        <field name="name">Descuentos por pedidos</field>
+        <field name="res_model">sale.report.header.discount</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">graph</field>
+        <field name="search_view_id" ref="view_order_header_discount_search"/>
+        <field name="view_id" ref="view_order_header_discount_graph"/>
+        <field name="context">{'search_default_Sales':1, 'search_default_year': 1, 'group_by_no_leaf':1,'group_by':[]}</field>
+        <field name="help">This report performs analysis on your quotations and sales orders. Analysis check your sales revenues and sort it by different group criteria (salesman, partner, product, etc.) Use this report to perform analysis on sales not having invoiced yet. If you want to analyse your turnover, you should use the Invoice Analysis report in the Accounting application.</field>
+    </record>
+
+    <menuitem action="action_order_header_discount" id="menu_report_header_discount" parent="base.next_id_64" sequence="25"/>
+
+
+</data>
+</openerp>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+        <record id="view_user_assign" model="ir.ui.view">
+              <field name="name">User Assign</field>
+              <field name="model">crm.lead.user.assign</field>
+              <field name="type">form</field>
+              <field name="arch" type="xml">
+                <form string="User Assign">
+			<group>
+				<field name="user_id" />
+			</group>
+		        <footer>
+                	        <button name="user_assign" string="User Assign"  type="object" class="oe_highlight"  />
+					or
+                	        <button string="Cancel" class="oe_link" special="cancel" />
+	                </footer>
+                </form>
+              </field>
+        </record>
+
+
+
+    <record id="action_crmlead_user_assign_gus" model="ir.actions.act_window">
+        <field name="name">Promotor Assign</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="src_model">crm.lead</field>
+        <field name="res_model">crm.lead.user.assign</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record model="ir.values" id="action_crmlead_user_assign">
+        <field name="name">Promotor Assign</field>
+        <field name="key2">client_action_multi</field>
+        <field name="value" eval="'ir.actions.act_window,' +str(ref('action_crmlead_user_assign_gus'))" />
+        <field name="key">action</field>
+        <field name="model">crm.lead</field>
+    </record>
+
+</data>
+</openerp>
+

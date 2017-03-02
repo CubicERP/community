@@ -1,0 +1,25 @@
+-
+ Asigno al operador de oportunidades y ventas al usuario de ventas. 
+-
+  !context
+    uid: 'res_users_salesman_user'
+-
+  Inicio el Wizard "Realizar Ventas".
+-
+  !record {model: crm.make.sale, id: crm_make_sale_0}:
+    partner_id: cliente_0
+-
+  Convierto la oportunidad en un "Presupuesto".
+-
+  !python {model: crm.make.sale}: |
+    crm_lead = self.pool.get('crm.lead')
+    crm = crm_lead.browse(cr, uid, ref("test_crm_lead_new"))
+    self.makeOrder(cr, uid, [ref("crm_make_sale_0")], {"active_ids": [crm.id],
+      "active_id": crm.id})
+-
+  Verifico que el exista el número de "Presupuesto" en la oportunidad.
+-
+  !python {model: crm.lead}: |
+    crm = self.browse(cr, uid, ref("test_crm_lead_new"))
+    assert crm.ref, "Quotation has not been created."
+

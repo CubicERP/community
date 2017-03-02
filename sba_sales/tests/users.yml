@@ -1,0 +1,49 @@
+-
+ Usuario que aprueba presupuestos nivel nacional.
+-
+ !record { model: res.users, id: salesman_manager_national, view: False }:
+   company_id: base.main_company
+   name: Sale National Manager
+   login: sln
+   password: sln
+   email: sln@yourcompany.com
+-
+ Asigna grupo de administrador.
+-
+  !record {model: res.users, id: salesman_manager_national}:
+    groups_id:
+      - base.group_sale_manager
+
+-
+ Usuario que aprueba presupuestos nivel local.
+-
+ !record { model: res.users, id: salesman_manager_local, view: False }:
+   name: Sale Local Manager 
+   login: slm
+   password: slm
+   email: slm@yourcompany.com
+
+-
+ Asigna grupo de administrador.
+-
+  !record {model: res.users, id: salesman_manager_local}:
+    groups_id:
+      - base.group_sale_manager
+
+-
+ Usuario que genera presupuesto.
+-
+ !record { model: res.users, id: res_users_salesman_user, view: False }:
+   name: Sale User
+   login: su
+   password: su
+   email: su@yourcompany.com
+
+-
+ Asigna grupo de usuario.
+-
+  !record {model: res.users, id: res_users_salesman_user}:
+    groups_id:
+      - base.group_sale_salesman_all_leads
+      - base.group_partner_manager
+
