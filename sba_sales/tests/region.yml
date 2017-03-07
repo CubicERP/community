@@ -1,6 +1,0 @@
--
- Region 0
--
- !record { model: res.partner.region, id: region_0 }:
-   name: Region 0
- 
