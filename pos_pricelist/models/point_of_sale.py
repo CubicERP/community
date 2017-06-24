@@ -71,6 +71,8 @@ class PosOrderLine(models.Model):
     price_subtotal_incl = fields.Float(compute="_amount_line_all", store=True)
 
 
+
+
 class PosOrder(models.Model):
     _inherit = "pos.order"
 
@@ -158,3 +160,7 @@ class PosOrder(models.Model):
         # Compute tax detail
         orders.compute_tax_detail()
         _logger.info("%d orders computed installing module.", len(orders))
+
+    def _get_order_line_taxes(self, cr, uid, line, context=None):
+        res = super(PosOrder, self)._get_order_line_taxes(cr, uid, line, context=context)
+        return line.tax_ids or res
