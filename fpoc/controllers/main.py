@@ -176,7 +176,7 @@ class FiscalPrinterController(oeweb.Controller):
         env = dict(
             base_location=req.httprequest.url_root.rstrip('/'),
             HTTP_HOST=wsgienv['HTTP_HOST'],
-            REMOTE_ADDR=wsgienv['REMOTE_ADDR'],
+            REMOTE_ADDR=wsgienv.get("HTTP_X_FORWARDED_FOR", wsgienv['REMOTE_ADDR']),
         )
         req.session.authenticate(database, login, password, env)
         return {'session_id': req.session_id}
