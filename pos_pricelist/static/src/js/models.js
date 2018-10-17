@@ -133,7 +133,7 @@ function pos_pricelist_models(instance, module) {
         getPosDiscount: function (product, line){
             var partner = this.get_client();
             if (partner && partner.property_product_pricelist) {
-                var version = this.pos.pricelist_engine.find_valid_pricelist_version(this.pos.db, this.partner.property_product_pricelist[0]); 
+                var version = this.pos.pricelist_engine.find_valid_pricelist_version(this.pos.db, partner.property_product_pricelist[0]); 
             } else {
                 var version = this.pos.pricelist_engine.find_valid_pricelist_version(this.pos.db, this.pos.config.pricelist_id[0]); 
             }
